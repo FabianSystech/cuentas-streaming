@@ -222,8 +222,8 @@
 
         document.getElementById("correo").textContent = correo || "No disponible";
         document.getElementById("clave").textContent  = clave  || "No disponible";
-        document.getElementById("perfil").textContent = perfil || "-";
-        document.getElementById("pin").textContent    = pin    || "-";
+        document.getElementById("perfil").textContent = perfil || "-----";
+        document.getElementById("pin").textContent    = pin    || "No definido";
 
         console.debug("Registro usado (normalizado):", cuentaMap);
       } catch (err) {
