@@ -222,10 +222,10 @@
       .then(res => res.json())
       .then(data => {
         const cuenta = data[0]; // toma la primera fila de la hoja
-        document.getElementById("correo").textContent = cuenta.correo || "No definido";
-        document.getElementById("clave").textContent = cuenta.contraseña || "No definido";
-        document.getElementById("perfil").textContent = cuenta.perfil || "No definido";
-        document.getElementById("pin").textContent = cuenta.pin || "No definido";
+        document.getElementById("correo").textContent = cuenta.correo || "...";
+        document.getElementById("clave").textContent = cuenta.contraseña || "...";
+        document.getElementById("perfil").textContent = cuenta.perfil || "...";
+        document.getElementById("pin").textContent = cuenta.pin || "...";
       })
       .catch(err => {
         console.error("Error al cargar datos:", err);
@@ -233,5 +233,6 @@
   </script>
 </body>
 </html>
+
 
 
