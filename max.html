@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credenciales HBO Max</title>
+  <style>
+    :root {
+      --bg:#f5f3ff;
+      --card:#fff;
+      --accent:#5b21b6;
+      --accent-dark:#3c1381;
+      --muted:#6b7280;
+      --pill:#f9fafb;
+      --warning-bg:#ede9fe;
+      --warning-border:#5b21b6;
+      --warning-text:#3c1381;
+      --success:#16a34a;
+    }
+    *{box-sizing:border-box}
+    body {
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+ 
+      background: url("https://www.catedracosgaya.com.ar/tipoblog/2023/wp-content/uploads/2023/08/Captura-de-pantalla-2023-08-25-234948-1024x416.png") no-repeat center center fixed;
+      background-size: cover;
+      font-family:Inter, system-ui, sans-serif;
+      color:#111827;
+      padding:20px;
+      
+    }
+    .card {
+      max-width:460px;
+      width:100%;
+      background:var(--card);
+      border-radius:16px;
+      box-shadow:0 8px 30px rgba(0,0,0,0.08);
+      padding:24px;
+    }
+    .brand { text-align:center; margin-bottom:20px; }
+    .brand h1 { font-size:20px; margin:8px 0 0; color:#111827; }
+    .fila { margin-bottom:14px; }
+    .etiqueta { font-size:13px; font-weight:600; color:var(--muted); margin-bottom:6px; }
+    .valor { display:flex; align-items:center; gap:8px; }
+    .block {
+      background:var(--pill);
+      padding:10px 12px;
+      border-radius:8px;
+      font-weight:600;
+      flex:1;
+      word-break:break-all;
+      font-size:14px;
+      user-select:text;
+    }
+    .btn {
+      background:#2C365C;   /* Azul muy oscuro del logo */
+      color:#fff;
+      border:0;
+      padding:8px 12px;
+      border-radius:8px;
+      cursor:pointer;
+      font-size:13px;
+      font-weight:600;
+      transition:.2s;
+    }
+    .btn:hover {
+      background:#1b1f30;   /* Un poco más claro al pasar el mouse */}
+    .rules {
+      background:var(--warning-bg);
+      border-left:6px solid var(--warning-border);
+      color:var(--warning-text);
+      padding:14px;
+      border-radius:12px;
+      font-size:14px;
+      margin-top:20px;
+      line-height:1.5;
+    }
+    .rules strong { display:block; margin-bottom:6px; font-size:15px; color:var(--accent-dark); }
+    .toast {
+      position:fixed; right:20px; bottom:20px;
+      background:#111827; color:white; padding:10px 14px; border-radius:10px;
+      opacity:0; transform:translateY(12px); transition:all .28s ease;
+      font-size:14px; display:flex; gap:8px; align-items:center; z-index:1000;
+    }
+    .toast.show {opacity:1; transform:translateY(0);}
+    .toast .dot { width:10px; height:10px; border-radius:50%; background:var(--success); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">
+      <img src="https://www.prensario.net/multimedios/imgs/66714_750.jpg" alt="HBO Max" width="140">
+      <h1>Credenciales HBO Max</h1>
+    </div>
+
+    <div class="fila">
+      <div class="etiqueta">📧 Correo</div>
+      <div class="valor">
+        <div id="correo" class="block">Cargando...</div>
+        <button class="btn" data-copy="correo">Copiar</button>
+      </div>
+    </div>
+
+    <div class="fila">
+      <div class="etiqueta">🔑 Contraseña</div>
+      <div class="valor">
+        <div id="clave" class="block">Cargando...</div>
+        <button class="btn" data-copy="clave">Copiar</button>
+      </div>
+    </div>
+
+    <div class="fila">
+      <div class="etiqueta">👤 Perfil</div>
+      <div class="valor">
+        <div id="perfil" class="block">Cargando...</div>
+      </div>
+    </div>
+
+    <div class="fila">
+      <div class="etiqueta">📌 PIN</div>
+      <div class="valor">
+        <div id="pin" class="block">Cargando...</div>
+      </div>
+    </div>
+
+    <div class="rules">
+      <strong>⚠️ Normas de uso ⚠️</strong>
+      <ul>
+        <li>📱 Recordar: <b>1 pantalla = 1 dispositivo máximo</b></li>
+        <li>🔒 No modificar la contraseña</li>
+        <li>🚫 De lo contrario, se perderá garantía y será expulsado</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <span class="dot" aria-hidden="true"></span>
+    <span id="toastText">Copiado al portapapeles</span>
+  </div>
+
+  <script>
+  (function() {
+    const buttons = document.querySelectorAll('[data-copy]');
+    const toast = document.getElementById('toast');
+    const toastText = document.getElementById('toastText');
+    let toastTimer = null;
+
+    // === URL de tu Google Sheet convertida a JSON (OpenSheet) ===
+    const DATA_URL = "https://opensheet.elk.sh/1UjZ2NJthnzzMQ1HcTLhbzwHPLqlr4Us2-WQvFC7wBiw/1";
+
+    function showToast(text) {
+      toastText.textContent = text;
+      toast.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    async function copyText(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const text = el.innerText.trim();
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Copiado: " + text);
+      } catch (e) {
+        showToast("No se pudo copiar automáticamente. Selecciona y copia.");
+      }
+    }
+
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => copyText(btn.getAttribute("data-copy")));
+    });
+
+    function normalizeKey(k) {
+      if (!k) return "";
+      return k
+        .toString()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "");
+    }
+
+    function normalizeObjectKeys(obj) {
+      const map = {};
+      for (const key in obj) {
+        if (!Object.prototype.hasOwnProperty.call(obj, key)) continue;
+        map[normalizeKey(key)] = obj[key];
+      }
+      return map;
+    }
+
+    function getFirst(map, candidates) {
+      for (const c of candidates) {
+        if (map[c] !== undefined && map[c] !== null && String(map[c]).trim() !== "") {
+          return String(map[c]).trim();
+        }
+      }
+      return "";
+    }
+
+    async function loadData() {
+      try {
+        const res = await fetch(DATA_URL);
+        const data = await res.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+          showToast("No hay datos en la hoja (JSON vacío).");
+          return;
+        }
+
+        const rawCuenta = data[data.length - 1];
+        const cuentaMap = normalizeObjectKeys(rawCuenta);
+
+        const correo = getFirst(cuentaMap, ["correo", "email", "e-mail", "correoelectronico"]);
+        const clave  = getFirst(cuentaMap, ["contrasena", "contrasenia", "contraseña", "clave", "password", "pass"]);
+        const perfil = getFirst(cuentaMap, ["perfil", "profile", "usuario"]);
+        const pin    = getFirst(cuentaMap, ["pin", "codigo", "codigo_pin", "ping"]);
+
+        document.getElementById("correo").textContent = correo || "No disponible";
+        document.getElementById("clave").textContent  = clave  || "No disponible";
+        document.getElementById("perfil").textContent = perfil || "-";
+        document.getElementById("pin").textContent    = pin    || "-";
+
+        console.debug("Registro usado (normalizado):", cuentaMap);
+      } catch (err) {
+        console.error("Error cargando datos:", err);
+        showToast("Error cargando datos (ver consola).");
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadData);
+  })();
+  </script>
+</body>
+</html>
