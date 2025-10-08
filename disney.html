@@ -8,7 +8,7 @@
     :root {
       --bg:#f4f6fb; 
       --card:#fff;
-      --accent:#1f80e0;   /* Azul Disney+ */
+      --accent:#1f80e0;
       --accent-dark:#1661b3;
       --muted:#6b7280;
       --pill:#f9fafb;
@@ -47,9 +47,7 @@
       margin:8px 0 0;
       color:#111827;
     }
-    .fila {
-      margin-bottom:14px;
-    }
+    .fila { margin-bottom:14px; }
     .etiqueta {
       font-size:13px;
       font-weight:600;
@@ -130,8 +128,6 @@
       width:10px; height:10px; border-radius:50%;
       background:var(--success);
     }
-
-    /* Botón Disney+ */
     .btn-disney {
       display:inline-flex;
       align-items:center;
@@ -148,16 +144,9 @@
       font-size:14px;
       margin-top:18px;
     }
-    .btn-disney:hover {
-      background:var(--accent-dark);
-    }
-    .go-disney {
-      text-align:center;
-    }
-    .btn-disney img {
-      width:22px;
-      height:auto;
-    }
+    .btn-disney:hover { background:var(--accent-dark); }
+    .go-disney { text-align:center; }
+    .btn-disney img { width:22px; height:auto; }
   </style>
 </head>
 <body>
@@ -206,7 +195,6 @@
       </ul>
     </div>
 
-    <!-- Botón para ir a Disney+ -->
     <div class="go-disney">
       <a href="https://www.disneyplus.com" target="_blank" class="btn-disney">
         <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg" alt="Disney+">
@@ -222,9 +210,9 @@
 
   <script>
     (function(){
-      const buttons = document.querySelectorAll('[data-copy]');
-      const toast = document.getElementById('toast');
-      const toastText = document.getElementById('toastText');
+      const buttons=document.querySelectorAll('[data-copy]');
+      const toast=document.getElementById('toast');
+      const toastText=document.getElementById('toastText');
       let toastTimer=null;
 
       async function showToast(text){
@@ -238,10 +226,10 @@
         const el=document.getElementById(id);
         if(!el) return;
         const text=el.innerText.trim();
-        try {
+        try{
           await navigator.clipboard.writeText(text);
           showToast("Copiado: "+text);
-        } catch(e){
+        }catch(e){
           showToast("No se pudo copiar, selecciónalo manualmente");
         }
       }
@@ -249,23 +237,37 @@
       buttons.forEach(btn=>{
         btn.addEventListener("click",()=>copyText(btn.getAttribute("data-copy")));
       });
-    })();
 
-    fetch("https://opensheet.elk.sh/1JFECg_6Anl5ZsxRomnlaeGyFY63qzRAhxNg8H7Xlk3o/1")
-      .then(res => res.json())
-      .then(data => {
-        const cuenta = data[0];
-        document.getElementById("correo").textContent = cuenta.correo || "...";
-        document.getElementById("clave").textContent = cuenta.contraseña || "...";
-        document.getElementById("perfil").textContent = cuenta.perfil || "...";
-        document.getElementById("pin").textContent = cuenta.pin || "...";
-      })
-      .catch(err => {
-        console.error("Error al cargar datos:", err);
-      });
+      // ✅ Obtener ID del cliente desde la URL (?id=)
+      const params=new URLSearchParams(window.location.search);
+      const clienteId=params.get("id");
+
+      if(!clienteId){
+        alert("Falta el ID del cliente en la URL (usa ?id=xxxxx)");
+        return;
+      }
+
+      // ✅ Cargar datos desde la hoja (con columna ID)
+      fetch("https://opensheet.elk.sh/1JFECg_6Anl5ZsxRomnlaeGyFY63qzRAhxNg8H7Xlk3o/1")
+        .then(res=>res.json())
+        .then(data=>{
+          const cuenta=data.find(c=>c.ID===clienteId);
+          if(!cuenta) throw new Error("Cliente no encontrado");
+
+          document.getElementById("correo").textContent=cuenta.correo||"...";
+          document.getElementById("clave").textContent=cuenta.contraseña||"...";
+          document.getElementById("perfil").textContent=cuenta.perfil||"...";
+          document.getElementById("pin").textContent=cuenta.pin||"...";
+        })
+        .catch(err=>{
+          console.error("Error al cargar datos:",err);
+          showToast("No se pudieron cargar los datos");
+        });
+    })();
   </script>
 </body>
 </html>
+
 
 
 
