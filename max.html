@@ -24,13 +24,11 @@
       display:flex;
       align-items:center;
       justify-content:center;
- 
-      background: url("https://www.adslzone.net/app/uploads-adslzone.net/2022/01/estrenos-hbo-max-febrero.jpg") no-repeat center center fixed;
-      background-size: cover;
+      background:url("https://www.adslzone.net/app/uploads-adslzone.net/2022/01/estrenos-hbo-max-febrero.jpg") no-repeat center center fixed;
+      background-size:cover;
       font-family:Inter, system-ui, sans-serif;
       color:#111827;
       padding:20px;
-      
     }
     .card {
       max-width:460px;
@@ -56,7 +54,7 @@
       user-select:text;
     }
     .btn {
-      background:#2C365C;   /* Azul muy oscuro del logo */
+      background:#2C365C;
       color:#fff;
       border:0;
       padding:8px 12px;
@@ -66,8 +64,7 @@
       font-weight:600;
       transition:.2s;
     }
-    .btn:hover {
-      background:#1b1f30;   /* Un poco más claro al pasar el mouse */}
+    .btn:hover { background:#1b1f30; }
     .rules {
       background:var(--warning-bg);
       border-left:6px solid var(--warning-border);
@@ -87,6 +84,17 @@
     }
     .toast.show {opacity:1; transform:translateY(0);}
     .toast .dot { width:10px; height:10px; border-radius:50%; background:var(--success); }
+
+    /* Botón ir a HBO Max */
+    .go-max { text-align:center; margin-top:18px; }
+    .btn-max {
+      display:inline-flex; align-items:center; justify-content:center;
+      gap:8px; background:var(--accent); color:#fff;
+      font-weight:600; text-decoration:none; text-align:center;
+      padding:10px 18px; border-radius:10px; transition:.3s; font-size:14px;
+    }
+    .btn-max:hover { background:var(--accent-dark); }
+    .btn-max img { width:24px; height:auto; }
   </style>
 </head>
 <body>
@@ -131,111 +139,82 @@
       <ul>
         <li>📱 Recordar: <b>1 pantalla = 1 dispositivo máximo</b></li>
         <li>🔒 No modificar la contraseña</li>
-        <li>🚫 De lo contrario, se perderá garantía y será expulsado</li>
+        <li>🚫 De lo contrario, se perderá la garantía</li>
       </ul>
+    </div>
+
+    <div class="go-max">
+      <a href="https://play.max.com/" target="_blank" class="btn-max">
+        <img src="https://www.netione.pl/wp-content/uploads/2025/07/hbomax-logo-color.png" alt="HBO Max">
+        Ir a HBO Max
+      </a>
     </div>
   </div>
 
-  <div id="toast" class="toast" role="status" aria-live="polite">
-    <span class="dot" aria-hidden="true"></span>
+  <div id="toast" class="toast">
+    <span class="dot"></span>
     <span id="toastText">Copiado al portapapeles</span>
   </div>
 
   <script>
-  (function() {
-    const buttons = document.querySelectorAll('[data-copy]');
-    const toast = document.getElementById('toast');
-    const toastText = document.getElementById('toastText');
-    let toastTimer = null;
+    (function(){
+      const buttons = document.querySelectorAll('[data-copy]');
+      const toast = document.getElementById('toast');
+      const toastText = document.getElementById('toastText');
+      let toastTimer = null;
 
-    // === URL de tu Google Sheet convertida a JSON (OpenSheet) ===
-    const DATA_URL = "https://opensheet.elk.sh/1UjZ2NJthnzzMQ1HcTLhbzwHPLqlr4Us2-WQvFC7wBiw/1";
-
-    function showToast(text) {
-      toastText.textContent = text;
-      toast.classList.add('show');
-      if (toastTimer) clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
-    }
-
-    async function copyText(id) {
-      const el = document.getElementById(id);
-      if (!el) return;
-      const text = el.innerText.trim();
-      try {
-        await navigator.clipboard.writeText(text);
-        showToast("Copiado: " + text);
-      } catch (e) {
-        showToast("No se pudo copiar automáticamente. Selecciona y copia.");
+      async function showToast(text){
+        toastText.textContent = text;
+        toast.classList.add('show');
+        if(toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(()=>toast.classList.remove('show'),2000);
       }
-    }
 
-    buttons.forEach(btn => {
-      btn.addEventListener("click", () => copyText(btn.getAttribute("data-copy")));
-    });
-
-    function normalizeKey(k) {
-      if (!k) return "";
-      return k
-        .toString()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase()
-        .replace(/[^a-z0-9]/g, "");
-    }
-
-    function normalizeObjectKeys(obj) {
-      const map = {};
-      for (const key in obj) {
-        if (!Object.prototype.hasOwnProperty.call(obj, key)) continue;
-        map[normalizeKey(key)] = obj[key];
-      }
-      return map;
-    }
-
-    function getFirst(map, candidates) {
-      for (const c of candidates) {
-        if (map[c] !== undefined && map[c] !== null && String(map[c]).trim() !== "") {
-          return String(map[c]).trim();
+      async function copyText(id){
+        const el = document.getElementById(id);
+        if(!el) return;
+        const text = el.innerText.trim();
+        try{
+          await navigator.clipboard.writeText(text);
+          showToast("Copiado: " + text);
+        }catch(e){
+          showToast("No se pudo copiar automáticamente");
         }
       }
-      return "";
-    }
 
-    async function loadData() {
-      try {
-        const res = await fetch(DATA_URL);
-        const data = await res.json();
+      buttons.forEach(btn=>{
+        btn.addEventListener("click",()=>copyText(btn.getAttribute("data-copy")));
+      });
 
-        if (!Array.isArray(data) || data.length === 0) {
-          showToast("No hay datos en la hoja (JSON vacío).");
-          return;
-        }
+      // ✅ Obtener ID del cliente desde la URL (?id=)
+      const params = new URLSearchParams(window.location.search);
+      const clienteId = params.get("id");
 
-        const rawCuenta = data[data.length - 1];
-        const cuentaMap = normalizeObjectKeys(rawCuenta);
-
-        const correo = getFirst(cuentaMap, ["correo", "email", "e-mail", "correoelectronico"]);
-        const clave  = getFirst(cuentaMap, ["contrasena", "contrasenia", "contraseña", "clave", "password", "pass"]);
-        const perfil = getFirst(cuentaMap, ["perfil", "profile", "usuario"]);
-        const pin    = getFirst(cuentaMap, ["pin", "codigo", "codigo_pin", "ping"]);
-
-        document.getElementById("correo").textContent = correo || "No disponible";
-        document.getElementById("clave").textContent  = clave  || "No disponible";
-        document.getElementById("perfil").textContent = perfil || "-----";
-        document.getElementById("pin").textContent    = pin    || "No definido";
-
-        console.debug("Registro usado (normalizado):", cuentaMap);
-      } catch (err) {
-        console.error("Error cargando datos:", err);
-        showToast("Error cargando datos (ver consola).");
+      if(!clienteId){
+        alert("Falta el ID del cliente en la URL (usa ?id=xxxxx)");
+        return;
       }
-    }
 
-    document.addEventListener("DOMContentLoaded", loadData);
-  })();
+      // ✅ Cargar datos desde la hoja (con columna ID)
+      fetch("https://opensheet.elk.sh/1UjZ2NJthnzzMQ1HcTLhbzwHPLqlr4Us2-WQvFC7wBiw/1")
+        .then(res=>res.json())
+        .then(data=>{
+          const cuenta = data.find(c=>c.ID === clienteId);
+          if(!cuenta) throw new Error("Cliente no encontrado");
+
+          document.getElementById("correo").textContent = cuenta.correo || "...";
+          document.getElementById("clave").textContent  = cuenta.contraseña || "...";
+          document.getElementById("perfil").textContent = cuenta.perfil || "...";
+          document.getElementById("pin").textContent    = cuenta.pin || "...";
+        })
+        .catch(err=>{
+          console.error("Error al cargar datos:", err);
+          showToast("No se pudieron cargar los datos");
+        });
+    })();
   </script>
 </body>
 </html>
+
 
 
