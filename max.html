@@ -8,13 +8,13 @@
     :root {
       --bg:#f5f3ff;
       --card:#fff;
-      --accent:#5b21b6;
-      --accent-dark:#3c1381;
+      --accent:#2C365C;
+      --accent-dark:#2C365C;
       --muted:#6b7280;
       --pill:#f9fafb;
       --warning-bg:#ede9fe;
-      --warning-border:#5b21b6;
-      --warning-text:#3c1381;
+      --warning-border:#2C365C;
+      --warning-text:#2C365C;
       --success:#16a34a;
     }
     *{box-sizing:border-box}
@@ -191,10 +191,10 @@
       const params = new URLSearchParams(window.location.search);
       const clienteId = params.get("id");
 
-      if(!clienteId){
-        alert("Falta el ID del cliente en la URL (usa ?id=xxxxx)");
-        return;
-      }
+      // if(!clienteId){
+      //   alert("Falta el ID del cliente en la URL (usa ?id=xxxxx)");
+      //   return;
+      // }
 
       // ✅ Cargar datos desde la hoja (con columna ID)
       fetch("https://opensheet.elk.sh/1UjZ2NJthnzzMQ1HcTLhbzwHPLqlr4Us2-WQvFC7wBiw/1")
@@ -216,7 +216,6 @@
   </script>
 </body>
 </html>
-
 
 
 
