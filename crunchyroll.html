@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credenciales Crunchyroll</title>
+  <style>
+    :root {
+      --bg:#fff6f1;
+      --card:#fff;
+      --accent:#f47521;
+      --accent-dark:#d85f12;
+      --muted:#6b7280;
+      --pill:#f9fafb;
+      --warning-bg:#fff1e5;
+      --warning-border:#f47521;
+      --warning-text:#c65305;
+      --success:#16a34a;
+    }
+    *{box-sizing:border-box}
+    body {
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:url("https://tierragamer.com/wp-content/uploads/2024/10/my-hero-academia-you-are-next.webp") no-repeat center center fixed;
+      background-size:cover;
+      font-family:Inter, system-ui, sans-serif;
+      color:#111827;
+      padding:20px;
+    }
+    .card {
+      max-width:460px;
+      width:100%;
+      background:var(--card);
+      border-radius:16px;
+      box-shadow:0 8px 30px rgba(0,0,0,0.08);
+      padding:24px;
+    }
+    .brand { text-align:center; margin-bottom:20px; }
+    .brand h1 { font-size:20px; margin:8px 0 0; color:#111827; }
+    .fila { margin-bottom:14px; }
+    .etiqueta { font-size:13px; font-weight:600; color:var(--muted); margin-bottom:6px; }
+    .valor { display:flex; align-items:center; gap:8px; }
+    .block {
+      background:var(--pill);
+      padding:10px 12px;
+      border-radius:8px;
+      font-weight:600;
+      flex:1;
+      word-break:break-all;
+      font-size:14px;
+      user-select:text;
+    }
+    .btn {
+      background:var(--accent);
+      color:#fff;
+      border:0;
+      padding:8px 12px;
+      border-radius:8px;
+      cursor:pointer;
+      font-size:13px;
+      font-weight:600;
+      transition:.2s;
+    }
+    .btn:hover { background:var(--accent-dark); }
+    .rules {
+      background:var(--warning-bg);
+      border-left:6px solid var(--warning-border);
+      color:var(--warning-text);
+      padding:14px;
+      border-radius:12px;
+      font-size:14px;
+      margin-top:20px;
+      line-height:1.5;
+    }
+    .rules strong { display:block; margin-bottom:6px; font-size:15px; color:var(--accent-dark); }
+    .toast {
+      position:fixed; right:20px; bottom:20px;
+      background:#111827; color:white; padding:10px 14px; border-radius:10px;
+      opacity:0; transform:translateY(12px); transition:all .28s ease;
+      font-size:14px; display:flex; gap:8px; align-items:center; z-index:1000;
+    }
+    .toast.show {opacity:1; transform:translateY(0);}
+    .toast .dot { width:10px; height:10px; border-radius:50%; background:var(--success); }
+
+    /* Botón ir a Crunchyroll */
+    .go-crunchy { text-align:center; margin-top:18px; }
+    .btn-crunchy {
+      display:inline-flex; align-items:center; justify-content:center;
+      gap:8px; background:var(--accent); color:#fff;
+      font-weight:600; text-decoration:none; text-align:center;
+      padding:10px 18px; border-radius:10px; transition:.3s; font-size:14px;
+    }
+    .btn-crunchy:hover { background:var(--accent-dark); }
+    .btn-crunchy img { width:26px; height:auto; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Crunchyroll_Logo.png" alt="Crunchyroll" width="140">
+      <h1>Credenciales Crunchyroll</h1>
+    </div>
+
+    <div class="fila">
+      <div class="etiqueta">📧 Correo</div>
+      <div class="valor">
+        <div id="correo" class="block">...</div>
+        <button class="btn" data-copy="correo">Copiar</button>
+      </div>
+    </div>
+
+    <div class="fila">
+      <div class="etiqueta">🔑 Contraseña</div>
+      <div class="valor">
+        <div id="clave" class="block">...</div>
+        <button class="btn" data-copy="clave">Copiar</button>
+      </div>
+    </div>
+
+    <div class="fila">
+      <div class="etiqueta">👤 Perfil</div>
+      <div class="valor">
+        <div id="perfil" class="block">...</div>
+      </div>
+    </div>
+
+    <!-- <div class="fila">
+      <div class="etiqueta">📌 PIN</div>
+      <div class="valor">
+        <div id="pin" class="block">...</div>
+      </div>
+    </div> -->
+
+    <div class="go-crunchy">
+      <a href="https://www.crunchyroll.com/" target="_blank" class="btn-crunchy">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Crunchyroll_Logo.png" >
+        Ir a Crunchyroll
+      </a>
+    </div>
+
+    <div class="rules">
+      <strong>⚠️ Normas de uso ⚠️</strong>
+      <ul>
+        <li>📱 Solo <b>1 usuario por cuenta</b></li>
+        <li>🔒 No modificar la contraseña ni los perfiles</li>
+        <li>🚫 No cambiar idioma, plan o configuración</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">
+    <span class="dot"></span>
+    <span id="toastText">Copiado al portapapeles</span>
+  </div>
+
+  <script>
+    (function(){
+      const buttons = document.querySelectorAll('[data-copy]');
+      const toast = document.getElementById('toast');
+      const toastText = document.getElementById('toastText');
+      let toastTimer = null;
+
+      async function showToast(text){
+        toastText.textContent = text;
+        toast.classList.add('show');
+        if(toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(()=>toast.classList.remove('show'),2000);
+      }
+
+      async function copyText(id){
+        const el = document.getElementById(id);
+        if(!el) return;
+        const text = el.innerText.trim();
+        try{
+          await navigator.clipboard.writeText(text);
+          showToast("Copiado: " + text);
+        }catch(e){
+          showToast("No se pudo copiar automáticamente");
+        }
+      }
+
+      buttons.forEach(btn=>{
+        btn.addEventListener("click",()=>copyText(btn.getAttribute("data-copy")));
+      });
+
+      // ✅ Obtener ID del cliente desde la URL (?id=)
+      const params = new URLSearchParams(window.location.search);
+      const clienteId = params.get("id");
+
+      // ✅ Cargar datos desde la hoja (columna ID)
+      fetch("https://opensheet.elk.sh/1WMB7AHy9KUDHPrvPOk03RyiP0oMPM50drDcgjsmjNPU/1")
+        .then(res=>res.json())
+        .then(data=>{
+          const cuenta = data.find(c=>c.ID === clienteId);
+          if(!cuenta) throw new Error("Cliente no encontrado");
+
+          document.getElementById("correo").textContent = cuenta.correo || "...";
+          document.getElementById("clave").textContent  = cuenta.contraseña || "...";
+          document.getElementById("perfil").textContent = cuenta.perfil || "...";
+        //   document.getElementById("pin").textContent    = cuenta.pin || "...";
+        })
+        .catch(err=>{
+          console.error("Error al cargar datos:", err);
+          showToast("No se pudieron cargar los datos");
+        });
+    })();
+  </script>
+</body>
+</html>
