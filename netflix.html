@@ -111,10 +111,35 @@
     }
     .toast.show {opacity:1; transform:translateY(0);}
     .toast .dot { width:10px; height:10px; border-radius:50%; background:var(--success); }
+
+    /* ❌ Alerta centrada tipo Prime Video */
+    .alerta {
+      position:fixed;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      background:#fee2e2;
+      color:#7f1d1d;
+      padding:18px 26px;
+      border-radius:12px;
+      border-left:6px solid #dc2626;
+      font-size:15px;
+      font-weight:600;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      box-shadow:0 4px 20px rgba(0,0,0,0.15);
+      z-index:2000;
+      animation:fadeIn .4s ease;
+    }
+    @keyframes fadeIn {
+      from {opacity:0; transform:translate(-50%,-48%);}
+      to {opacity:1; transform:translate(-50%,-50%);}
+    }
   </style>
 </head>
 <body>
-  <div class="card">
+  <div class="card" id="contenido">
     <div class="brand">
       <img src="https://upload.wikimedia.org/wikipedia/commons/7/75/Netflix_icon.svg" alt="Netflix" width="80">
       <h1>Credenciales Netflix</h1>
@@ -149,7 +174,8 @@
         <div id="pin" class="block">...</div>
       </div>
     </div>
-<div class="go-netflix">
+    
+    <div class="go-netflix">
       <a href="https://www.netflix.com/login" target="_blank" class="btn-netflix">
         <img src="https://upload.wikimedia.org/wikipedia/commons/7/75/Netflix_icon.svg" alt="Netflix">
         Ir a Netflix
@@ -164,7 +190,7 @@
         <li>❌ De lo contrario se perderá garantía y será expulsado</li>
       </ul>
     </div>
-    
+
   </div>
 
   <div id="toast" class="toast">
@@ -173,7 +199,7 @@
   </div>
 
   <script>
-    (function(){
+(function(){
       const buttons = document.querySelectorAll('[data-copy]');
       const toast = document.getElementById('toast');
       const toastText = document.getElementById('toastText');
@@ -206,10 +232,10 @@
       const params = new URLSearchParams(window.location.search);
       const clienteId = params.get("id");
 
-      if(!clienteId){
-        alert("Falta el ID del cliente en la URL (usa ?id=xxxxx)");
-        return;
-      }
+      // if(!clienteId){
+      //   alert("Falta el ID del cliente en la URL (usa ?id=xxxxx)");
+      //   return;
+      // }
 
       // ✅ Cargar datos desde la hoja (con columna ID)
       fetch("https://opensheet.elk.sh/1t51FFKFVMgYo6SSPp2gmOVFexyUnHrXqOw-esFCzBnw/1")
