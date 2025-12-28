@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acceso asignado</title>
+
+  <style>
+    body{
+      font-family: system-ui, Arial, sans-serif;
+      background:#f4f6fb;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+      margin:0;
+    }
+    .card{
+      background:#fff;
+      max-width:420px;
+      width:100%;
+      padding:24px;
+      border-radius:14px;
+      box-shadow:0 10px 30px rgba(0,0,0,.1);
+    }
+    h1{
+      font-size:20px;
+      margin-bottom:20px;
+      text-align:center;
+    }
+    .row{
+      margin-bottom:14px;
+    }
+    .label{
+      font-size:13px;
+      color:#6b7280;
+      margin-bottom:4px;
+      font-weight:600;
+    }
+    .value{
+      background:#f1f5f9;
+      padding:10px;
+      border-radius:8px;
+      font-weight:600;
+      word-break:break-all;
+      cursor:text;
+    }
+    button{
+      margin-top:6px;
+      background:#2563eb;
+      color:white;
+      border:none;
+      padding:8px 12px;
+      border-radius:8px;
+      font-size:13px;
+      cursor:pointer;
+    }
+    button:hover{background:#1d4ed8;}
+    .error{
+      text-align:center;
+      color:#b91c1c;
+      font-weight:600;
+    }
+    .toast{
+      position:fixed;
+      bottom:20px;
+      right:20px;
+      background:#111827;
+      color:white;
+      padding:10px 14px;
+      border-radius:10px;
+      opacity:0;
+      transition:.3s;
+      font-size:14px;
+    }
+    .toast.show{opacity:1;}
+  </style>
+</head>
+
+<body>
+
+<div class="card" id="panel">
+  <h1>Acceso asignado</h1>
+
+  <div class="row">
+    <div class="label">Correo de acceso</div>
+    <div id="correo" class="value">---</div>
+    <button onclick="copiar('correo')">Copiar</button>
+  </div>
+
+  <div class="row">
+    <div class="label">Clave de uso</div>
+    <div id="clave" class="value">---</div>
+    <button onclick="copiar('clave')">Copiar</button>
+  </div>
+
+  <div class="row">
+    <div class="label">Perfil</div>
+    <div id="perfil" class="value">---</div>
+  </div>
+
+  <div class="row">
+    <div class="label">PIN</div>
+    <div id="pin" class="value">---</div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Copiado</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const codigo = params.get("c");
+
+  if(!codigo){
+    document.getElementById("panel").innerHTML =
+      "<p class='error'>Acceso no válido</p>";
+    throw new Error("Sin código");
+  }
+
+  function copiar(id){
+    const text = document.getElementById(id).innerText;
+    navigator.clipboard.writeText(text);
+    const t = document.getElementById("toast");
+    t.classList.add("show");
+    setTimeout(()=>t.classList.remove("show"),1500);
+  }
+
+  // 🔗 CONECTA AQUÍ TU SHEET (no público)
+  fetch("PEGA_AQUI_TU_URL_JSON")
+    .then(r=>r.json())
+    .then(data=>{
+      const cliente = data.find(x => x.codigo === codigo);
+      if(!cliente) throw "No encontrado";
+
+      document.getElementById("correo").textContent = cliente.correo;
+      document.getElementById("clave").textContent  = cliente.clave;
+      document.getElementById("perfil").textContent = cliente.perfil;
+      document.getElementById("pin").textContent    = cliente.pin;
+    })
+    .catch(()=>{
+      document.getElementById("panel").innerHTML =
+        "<p class='error'>Acceso no válido o expirado</p>";
+    });
+</script>
+
+</body>
+</html>
