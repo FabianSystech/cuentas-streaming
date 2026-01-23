@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Credenciales Disney+</title>
+
+<style>
+:root{
+  --accent:#1f80e0;
+  --accent-dark:#1661b3;
+  --bg:#040714;
+  --card:#0b1023;
+  --pill:#111;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:var(--bg);
+  font-family:Inter, system-ui, sans-serif;
+  color:#fff;
+}
+.card{
+  width:100%;
+  max-width:460px;
+  background:var(--card);
+  border-radius:16px;
+  padding:24px;
+  box-shadow:0 20px 40px rgba(0,0,0,.5);
+}
+.brand{text-align:center;margin-bottom:16px}
+.brand img{width:120px}
+h1{text-align:center;font-size:20px}
+
+input{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  margin-bottom:12px;
+}
+button{
+  background:var(--accent);
+  color:#fff;
+  border:none;
+  padding:10px 14px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+}
+button:hover{background:var(--accent-dark)}
+
+.fila{margin-bottom:14px}
+.etiqueta{font-size:13px;color:#9ca3af;margin-bottom:6px}
+.valor{display:flex;gap:8px}
+.block{
+  background:var(--pill);
+  padding:10px;
+  border-radius:8px;
+  flex:1;
+  word-break:break-all;
+}
+
+.data{display:none}
+.rules{
+  background:#0f172a;
+  border-left:5px solid var(--accent);
+  padding:12px;
+  border-radius:10px;
+  margin-top:16px;
+  font-size:14px;
+}
+
+.toast{
+  position:fixed;
+  bottom:20px; right:20px;
+  background:#111;
+  padding:10px 14px;
+  border-radius:10px;
+  opacity:0;
+  transition:.3s;
+}
+.toast.show{opacity:1}
+</style>
+</head>
+
+<body>
+<div class="card">
+
+  <div class="brand">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg">
+    <h1>Credenciales Disney+</h1>
+  </div>
+
+  <!-- PIN -->
+  <div id="login">
+    <input type="number" id="pin" placeholder="Ingresa tu PIN">
+    <button onclick="verificar()">Entrar</button>
+  </div>
+
+  <!-- DATOS -->
+  <div id="datos" class="data">
+
+    <div class="fila">
+      <div class="etiqueta">📧 Correo</div>
+      <div class="valor">
+        <div id="correo" class="block"></div>
+        <button onclick="copiar('correo')">Copiar</button>
+      </div>
+    </div>
+
+    <div class="fila">
+      <div class="etiqueta">🔑 Contraseña</div>
+      <div class="valor">
+        <div id="clave" class="block"></div>
+        <button onclick="copiar('clave')">Copiar</button>
+      </div>
+    </div>
+
+    <div class="fila">
+      <div class="etiqueta">👤 Perfil</div>
+      <div id="perfil" class="block"></div>
+    </div>
+
+    <a href="https://www.disneyplus.com" target="_blank" style="display:block;text-align:center;margin-top:14px">
+      <button>Ir a Disney+</button>
+    </a>
+
+    <div class="rules">
+      <b>Normas de uso</b><br>
+      • 1 dispositivo<br>
+      • No cambiar contraseña<br>
+      • No cerrar sesión
+    </div>
+
+  </div>
+</div>
+
+<div id="toast" class="toast">Copiado</div>
+
+<script>
+const SHEET="https://opensheet.elk.sh/1iy6NRg9YesT61fFte3i9MqSJ3uggCsVHWRrDRo5JAnA/1";
+
+function verificar(){
+  const pin=document.getElementById("pin").value;
+
+  fetch(SHEET).then(r=>r.json()).then(data=>{
+    const c=data.find(x=>x.pin===pin);
+    if(!c){alert("PIN incorrecto");return;}
+
+    document.getElementById("login").style.display="none";
+    document.getElementById("datos").style.display="block";
+
+    correo.textContent=c.correo;
+    clave.textContent=c.contraseña;
+    perfil.textContent=c.perfil;
+  });
+}
+
+function copiar(id){
+  navigator.clipboard.writeText(document.getElementById(id).innerText);
+  const t=document.getElementById("toast");
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),1500);
+}
+</script>
+</body>
+</html>
